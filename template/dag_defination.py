@@ -16,3 +16,8 @@ class TypeDAGNode(TypedDict):
     operator_type: str
     operator_params: Dict
     plugin_params: PluginParams
+
+class TypeDAGEdge(TypedDict):
+    id: str
+    source_node: str
+    target_node: str
