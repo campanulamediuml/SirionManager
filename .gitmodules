@@ -1,0 +1,3 @@
+[submodule "sirion_dep"]
+	path = sirion_dep
+	url = git@github.com:campanulamediuml/SirionDep.git
