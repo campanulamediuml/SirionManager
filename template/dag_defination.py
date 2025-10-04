@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*-coding:utf-8 -*-
 # Author     ：Campanula 梦芸 何
-from typing import TypedDict, Dict
+from typing import TypedDict, Dict, List
 
 
 class PluginParams(TypedDict):
@@ -21,3 +21,9 @@ class TypeDAGEdge(TypedDict):
     id: str
     source_node: str
     target_node: str
+
+class DAGConfig(TypedDict):
+    global_config: Dict[str, Dict]
+    nodes:List[TypeDAGNode]
+    edges:List[TypeDAGEdge]
+
