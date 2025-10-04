@@ -10,7 +10,7 @@ class PluginParams(TypedDict):
 
 
 class TypeDAGNode(TypedDict):
-    id: str
+    node_id: str
     node_type: str
     module_name: str
     operator_type: str
@@ -18,7 +18,7 @@ class TypeDAGNode(TypedDict):
     plugin_params: PluginParams
 
 class TypeDAGEdge(TypedDict):
-    id: str
+    edge_id: str
     source_node: str
     target_node: str
 
