@@ -30,6 +30,9 @@ class MergeOperator(OperatorBase):
         self.merge_win_size = self.operator_params.get('merge_win_size',10)
         self.merge_cache_data_collection:Dict[str,Dict[int,List[DataContext]]] = {}
         self._init_plugin()
+        t_pool_manager.add_task(task_name="merge_task",task_function=self.merge_task,is_interval=True)
+        t_pool_manager.add_task(task_name="execute_plugin_task",task_function=self.execute_plugin_task,is_interval=True)
+        self._subscribe_all_data_from_source_queue()
 
     def _init_plugin(self):
         """初始化插件"""
@@ -95,7 +98,7 @@ class MergeOperator(OperatorBase):
             merged_data_ctx_list = self.merge_cache_data_collection[data_tag].pop(data_watermark)
             self.after_merge_queue.put((data_tag,merged_data_ctx_list))
 
-    def execute_plugin(self):
+    def execute_plugin_task(self):
         data_tag, data_ctx_list =  self.after_merge_queue.get()
         self.__execute(data_tag, data_ctx_list)
 
