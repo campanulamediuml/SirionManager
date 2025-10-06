@@ -4,6 +4,7 @@
 from queue import SimpleQueue
 from typing import Dict, Any, List
 
+from SirionDep.sirion_dep_frame.plugin_frame import PluginBase
 from sirion_manager_operators.operator_base.base import OperatorBase
 from sirion_manager_type_template.dag_defination import PluginParams
 
@@ -14,6 +15,9 @@ class TransformOperator(OperatorBase):
                  target_queue: List[SimpleQueue]) -> None:
         super().__init__(node_id, node_type, module_name, plugin_params, operator_params, global_config, source_queue,
                          target_queue)
+        self._load_common_param()
+        self.plugin_collections:Dict[str,PluginBase]
+
 
 
 if __name__ == '__main__':

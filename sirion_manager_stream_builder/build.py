@@ -1,8 +1,9 @@
+import traceback
 from queue import SimpleQueue
 from typing import List, Dict, Any, Optional
 
 from SirionDep.sirion_dep_frame.data_object_frame.data_object import DataContext
-from sirion_manager_logger.logger import info
+from sirion_manager_logger.logger import info, error
 from sirion_manager_operators.merge import MergeOperator
 from sirion_manager_operators.operator_base.base import OperatorBase
 from sirion_manager_operators.sink import SinkOperator
@@ -89,10 +90,16 @@ class DAGBuilder():
         self.build_edge()
         self.update_all_nodes()
         self.update_all_edges()
+        self.init_operator_by_node()
 
     def init_operator_by_node(self):
-        for node_obj in self._node_collections.values():
-            node_obj.operator_init()
+            for node_obj in self._node_collections.values():
+                try:
+                    node_obj.operator_init()
+                except Exception as e:
+                    error("算子初始化失败--->",e,node_obj.node_id)
+                    error(traceback.format_exc())
+                raise Exception("算子初始化失败，退出程序")
 
     def build_node(self):
         """

@@ -8,7 +8,7 @@ from typing import Dict, Any, List, Optional
 from pydantic.mypy import plugin
 
 from SirionDep.sirion_dep_frame.data_object_frame.data_object import DataContext
-from SirionDep.sirion_dep_frame.plugin_frame import PuginBase
+from SirionDep.sirion_dep_frame.plugin_frame import PluginBase
 from sirion_manager_type_template.dag_defination import PluginParams
 
 

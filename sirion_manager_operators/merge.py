@@ -14,3 +14,5 @@ class MergeOperator(OperatorBase):
                  target_queue: List[SimpleQueue]) -> None:
         super().__init__(node_id, node_type, module_name, plugin_params, operator_params, global_config, source_queue,
                          target_queue)
+
+
