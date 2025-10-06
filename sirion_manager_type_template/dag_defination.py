@@ -1,7 +1,15 @@
 # !/usr/bin/env python
 # -*-coding:utf-8 -*-
 # Author     ：Campanula 梦芸 何
-from typing import TypedDict, Dict, List, Any
+from typing import TypedDict, Dict, List, Any, LiteralString, Literal
+
+TypeOperatorType = Literal[
+    'source',
+    'sink',
+    'merge',
+    'split',
+    'transform'
+]
 
 
 class PluginParams(TypedDict):
@@ -13,7 +21,7 @@ class TypeDAGNode(TypedDict):
     node_id: str
     node_type: str
     module_name: str
-    operator_type: str
+    operator_type: TypeOperatorType
     operator_params: Dict
     plugin_params: PluginParams
 

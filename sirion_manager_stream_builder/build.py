@@ -1,9 +1,27 @@
 from queue import SimpleQueue
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Literal
 import json
 import os
 
-from sirion_manager_type_template.dag_defination import DAGConfig, TypeDAGEdge, TypeDAGNode, PluginParams
+from sirion_manager_logger.logger import info
+from sirion_manager_operators.merge import MergeOperator
+from sirion_manager_operators.operator_base.base import OperatorBase
+from sirion_manager_operators.sink import SinkOperator
+from sirion_manager_operators.source import SourceOperator
+from sirion_manager_operators.split import SplitOperator
+from sirion_manager_operators.transform import TransformOperator
+from sirion_manager_type_template.dag_defination import DAGConfig, TypeDAGEdge, TypeDAGNode, PluginParams, \
+    TypeOperatorType
+
+TypeOperator = TransformOperator | SourceOperator | SinkOperator | MergeOperator | SplitOperator
+
+operator_index:Dict[TypeOperatorType, type[TypeOperator]] = {
+    "source":SourceOperator,
+    "sink":SinkOperator,
+    "merge":MergeOperator,
+    "split":SplitOperator,
+    "transform":TransformOperator,
+}
 
 
 class DAGNodeBuilder():
@@ -11,11 +29,13 @@ class DAGNodeBuilder():
         self.node_id:str = node_config['node_id']
         self.node_type:str = node_config['node_type']
         self.module_name:str = node_config['module_name']
+        self.operator_type:TypeOperatorType = node_config['operator_type']
         self.operator_params:Dict[str,Any] = node_config['operator_params']
         self.plugin_params:PluginParams = node_config['plugin_params']
         self.global_config:Dict[str,Any] = global_config
         self.target_edges:List[SimpleQueue[Any]] = []
         self.source_edges:List[SimpleQueue[Any]] = []
+        self.operator:Optional[OperatorBase] = None
 
     def add_target_edge(self, edge_queue:SimpleQueue[Any]) -> None:
         self.target_edges.append(edge_queue)
@@ -24,7 +44,21 @@ class DAGNodeBuilder():
         self.source_edges.append(edge_queue)
 
     def operator_init(self):
-        return
+        """
+        初始化算子
+        :return:
+        """
+        self.operator = operator_index[self.operator_type](
+            self.node_id,
+            self.node_type,
+            self.module_name,
+            self.plugin_params,
+            self.operator_params,
+            self.global_config,
+            self.source_edges,
+            self.target_edges,
+        )
+        info("算子初始化", self.node_id, self.node_type, self.module_name, self.operator_type)
 
 class DAGEdgeBuilder():
     def __init__(self, node_config:TypeDAGEdge, global_config:Dict[str,Any]):
@@ -55,6 +89,9 @@ class DAGBuilder():
         self.update_all_nodes()
         self.update_all_edges()
 
+    def init_operator_by_node(self):
+        for node_obj in self._node_collections.values():
+            node_obj.operator_init()
 
     def build_node(self):
         """
