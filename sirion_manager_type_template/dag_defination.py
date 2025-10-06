@@ -1,11 +1,11 @@
 # !/usr/bin/env python
 # -*-coding:utf-8 -*-
 # Author     ：Campanula 梦芸 何
-from typing import TypedDict, Dict, List
+from typing import TypedDict, Dict, List, Any
 
 
 class PluginParams(TypedDict):
-    common_param: Dict
+    common_param: Dict[str,Any]
     parameter: Dict[str, Dict]
 
 
@@ -23,7 +23,7 @@ class TypeDAGEdge(TypedDict):
     target_node: str
 
 class DAGConfig(TypedDict):
-    global_config: Dict[str, Dict]
+    global_config: Dict[str, Any]
     nodes:List[TypeDAGNode]
     edges:List[TypeDAGEdge]
 

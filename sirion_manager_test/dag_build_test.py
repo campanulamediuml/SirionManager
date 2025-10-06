@@ -3,7 +3,7 @@
 # Author     ：Campanula 梦芸 何
 from typing import List
 
-from template.dag_defination import DAGConfig, TypeDAGNode
+from sirion_manager_type_template.dag_defination import DAGConfig, TypeDAGNode
 
 node_template:TypeDAGNode = {
     "node_id":"1",
