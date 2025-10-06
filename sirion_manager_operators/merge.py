@@ -120,10 +120,6 @@ class MergeOperator(OperatorBase):
             error("合并算子内插件执行错误--->", e,"算子节点id",self.node_id)
 
 
-        except Exception as e:
-            error(traceback.format_exc())
-
-
 
 
 
