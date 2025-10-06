@@ -3,7 +3,7 @@
 # Author     ：Campanula 梦芸 何
 from SirionDep.sirion_dep_util_tools.logger.logger import dep_dbg, dep_info, dep_warn, dep_error
 
-LOG_SOURCE = "MNG"
+LOG_SOURCE = "MANAGER"
 
 
 def dbg(*msg):
