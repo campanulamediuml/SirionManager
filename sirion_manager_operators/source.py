@@ -25,7 +25,9 @@ class SourceOperator(OperatorBase):
         self.plugin:Optional[PluginBase] = None
         self._init_plugin()
         if len(self.target_queue) > 1:
-            raise Exception(f"source类型算子之支持一个下游, 算子id {self.node_id}")
+            raise Exception(f"source类型算子只支持一个下游, 算子id {self.node_id}")
+        if len(self.source_queue) > 1:
+            raise Exception(f"source类型算子不支持存在上游, 算子id {self.node_id}")
         t_pool_manager.add_task(task_name="source_read_loop",
                                 task_function=self.read_data_from_source,
                                 is_interval=True)
