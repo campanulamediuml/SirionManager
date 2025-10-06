@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*-coding:utf-8 -*-
 # Author     ：Campanula 梦芸 何
-from typing import TypedDict, Dict, List, Any, LiteralString, Literal
+from typing import TypedDict, Dict, List, Any, Literal
 
 TypeOperatorType = Literal[
     'source',
@@ -13,7 +13,7 @@ TypeOperatorType = Literal[
 
 
 class PluginParams(TypedDict):
-    common_param: Dict[str,Any]
+    common_param: Dict[str, Any]
     parameter: Dict[str, Dict]
 
 
@@ -25,13 +25,14 @@ class TypeDAGNode(TypedDict):
     operator_params: Dict
     plugin_params: PluginParams
 
+
 class TypeDAGEdge(TypedDict):
     edge_id: str
     source_node: str
     target_node: str
 
+
 class DAGConfig(TypedDict):
     global_config: Dict[str, Any]
-    nodes:List[TypeDAGNode]
-    edges:List[TypeDAGEdge]
-
+    nodes: List[TypeDAGNode]
+    edges: List[TypeDAGEdge]

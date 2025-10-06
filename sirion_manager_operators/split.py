@@ -5,7 +5,7 @@ from queue import SimpleQueue
 from typing import Dict, Any, List
 
 from sirion_manager_operators.operator_base.base import OperatorBase
-from sirion_manager_type_template.dag_defination import  PluginParams
+from sirion_manager_type_template.dag_defination import PluginParams
 
 
 class SplitOperator(OperatorBase):

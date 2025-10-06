@@ -1,7 +1,5 @@
 from queue import SimpleQueue
-from typing import List, Dict, Any, Optional, Literal
-import json
-import os
+from typing import List, Dict, Any, Optional
 
 from sirion_manager_logger.logger import info
 from sirion_manager_operators.merge import MergeOperator
@@ -15,32 +13,32 @@ from sirion_manager_type_template.dag_defination import DAGConfig, TypeDAGEdge, 
 
 TypeOperator = TransformOperator | SourceOperator | SinkOperator | MergeOperator | SplitOperator
 
-operator_index:Dict[TypeOperatorType, type[TypeOperator]] = {
-    "source":SourceOperator,
-    "sink":SinkOperator,
-    "merge":MergeOperator,
-    "split":SplitOperator,
-    "transform":TransformOperator,
+operator_index: Dict[TypeOperatorType, type[TypeOperator]] = {
+    "source": SourceOperator,
+    "sink": SinkOperator,
+    "merge": MergeOperator,
+    "split": SplitOperator,
+    "transform": TransformOperator,
 }
 
 
 class DAGNodeBuilder():
-    def __init__(self, node_config:TypeDAGNode, global_config:Dict[str,Any]):
-        self.node_id:str = node_config['node_id']
-        self.node_type:str = node_config['node_type']
-        self.module_name:str = node_config['module_name']
-        self.operator_type:TypeOperatorType = node_config['operator_type']
-        self.operator_params:Dict[str,Any] = node_config['operator_params']
-        self.plugin_params:PluginParams = node_config['plugin_params']
-        self.global_config:Dict[str,Any] = global_config
-        self.target_edges:List[SimpleQueue[Any]] = []
-        self.source_edges:List[SimpleQueue[Any]] = []
-        self.operator:Optional[OperatorBase] = None
+    def __init__(self, node_config: TypeDAGNode, global_config: Dict[str, Any]):
+        self.node_id: str = node_config['node_id']
+        self.node_type: str = node_config['node_type']
+        self.module_name: str = node_config['module_name']
+        self.operator_type: TypeOperatorType = node_config['operator_type']
+        self.operator_params: Dict[str, Any] = node_config['operator_params']
+        self.plugin_params: PluginParams = node_config['plugin_params']
+        self.global_config: Dict[str, Any] = global_config
+        self.target_edges: List[SimpleQueue[Any]] = []
+        self.source_edges: List[SimpleQueue[Any]] = []
+        self.operator: Optional[OperatorBase] = None
 
-    def add_target_edge(self, edge_queue:SimpleQueue[Any]) -> None:
+    def add_target_edge(self, edge_queue: SimpleQueue[Any]) -> None:
         self.target_edges.append(edge_queue)
 
-    def add_source_edge(self, edge_queue:SimpleQueue[Any]):
+    def add_source_edge(self, edge_queue: SimpleQueue[Any]):
         self.source_edges.append(edge_queue)
 
     def operator_init(self):
@@ -60,30 +58,32 @@ class DAGNodeBuilder():
         )
         info("算子初始化", self.node_id, self.node_type, self.module_name, self.operator_type)
 
-class DAGEdgeBuilder():
-    def __init__(self, node_config:TypeDAGEdge, global_config:Dict[str,Any]):
-        self.edge_id:str = node_config['edge_id']
-        self.source_id:str = node_config['source_node']
-        self.target_id:str = node_config['target_node']
-        self.source_node:Optional[DAGNodeBuilder] = None
-        self.target_node:Optional[DAGNodeBuilder] = None
-        self.global_config:Dict[str,Any] = global_config
-        self.edge_queue:SimpleQueue[Any] = SimpleQueue()
 
-    def add_source_node(self, node:DAGNodeBuilder):
+class DAGEdgeBuilder():
+    def __init__(self, node_config: TypeDAGEdge, global_config: Dict[str, Any]):
+        self.edge_id: str = node_config['edge_id']
+        self.source_id: str = node_config['source_node']
+        self.target_id: str = node_config['target_node']
+        self.source_node: Optional[DAGNodeBuilder] = None
+        self.target_node: Optional[DAGNodeBuilder] = None
+        self.global_config: Dict[str, Any] = global_config
+        self.edge_queue: SimpleQueue[Any] = SimpleQueue()
+
+    def add_source_node(self, node: DAGNodeBuilder):
         self.source_node = node
 
-    def add_target_node(self, node:DAGNodeBuilder):
+    def add_target_node(self, node: DAGNodeBuilder):
         self.target_node = node
 
+
 class DAGBuilder():
-    def __init__(self, dag_json_obj:DAGConfig):
-        self.dag_json_obj:DAGConfig = dag_json_obj
+    def __init__(self, dag_json_obj: DAGConfig):
+        self.dag_json_obj: DAGConfig = dag_json_obj
         self._node_config_list = self.dag_json_obj['nodes']
         self._edge_config_list = self.dag_json_obj['edges']
-        self.global_config:Dict[str,Any] = dag_json_obj['global_config']
-        self._node_collections:Dict[str, DAGNodeBuilder] = {}
-        self._edge_collections:Dict[str, DAGEdgeBuilder] = {}
+        self.global_config: Dict[str, Any] = dag_json_obj['global_config']
+        self._node_collections: Dict[str, DAGNodeBuilder] = {}
+        self._edge_collections: Dict[str, DAGEdgeBuilder] = {}
         self.build_node()
         self.build_edge()
         self.update_all_nodes()
@@ -134,15 +134,3 @@ class DAGBuilder():
             target_node = self._node_collections[edge_obj.target_id]
             source_node.add_target_edge(edge_obj.edge_queue)
             target_node.add_source_edge(edge_obj.edge_queue)
-
-
-
-
-
-
-
-
-
-
-
-
