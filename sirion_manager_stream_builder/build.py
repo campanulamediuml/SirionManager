@@ -1,6 +1,7 @@
 from queue import SimpleQueue
 from typing import List, Dict, Any, Optional
 
+from SirionDep.sirion_dep_frame.data_object_frame.data_object import DataContext
 from sirion_manager_logger.logger import info
 from sirion_manager_operators.merge import MergeOperator
 from sirion_manager_operators.operator_base.base import OperatorBase
@@ -31,14 +32,14 @@ class DAGNodeBuilder():
         self.operator_params: Dict[str, Any] = node_config['operator_params']
         self.plugin_params: PluginParams = node_config['plugin_params']
         self.global_config: Dict[str, Any] = global_config
-        self.target_edges: List[SimpleQueue[Any]] = []
-        self.source_edges: List[SimpleQueue[Any]] = []
+        self.target_edges: List[SimpleQueue[List[DataContext]]] = []
+        self.source_edges: List[SimpleQueue[List[DataContext]]] = []
         self.operator: Optional[OperatorBase] = None
 
-    def add_target_edge(self, edge_queue: SimpleQueue[Any]) -> None:
+    def add_target_edge(self, edge_queue: SimpleQueue[List[DataContext]]) -> None:
         self.target_edges.append(edge_queue)
 
-    def add_source_edge(self, edge_queue: SimpleQueue[Any]):
+    def add_source_edge(self, edge_queue: SimpleQueue[List[DataContext]]):
         self.source_edges.append(edge_queue)
 
     def operator_init(self):
@@ -67,7 +68,7 @@ class DAGEdgeBuilder():
         self.source_node: Optional[DAGNodeBuilder] = None
         self.target_node: Optional[DAGNodeBuilder] = None
         self.global_config: Dict[str, Any] = global_config
-        self.edge_queue: SimpleQueue[Any] = SimpleQueue()
+        self.edge_queue: SimpleQueue[List[DataContext]] = SimpleQueue()
 
     def add_source_node(self, node: DAGNodeBuilder):
         self.source_node = node
