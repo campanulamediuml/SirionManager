@@ -88,15 +88,26 @@ class MergeOperator(OperatorBase):
         合并数据
         :return:
         """
-        can_pop_keys:List[Tuple[str,int]] = []
+        can_pop_keys:Dict[str,List[int]] = {}
         for data_tag in self.merge_cache_data_collection:
             for data_watermark in self.merge_cache_data_collection[data_tag]:
                 data_ctx_per_watermark = self.merge_cache_data_collection[data_tag][data_watermark]
                 if len(data_ctx_per_watermark) == len(self.source_queue):
-                    can_pop_keys.append((data_tag, data_watermark))
-        for data_tag, data_watermark in can_pop_keys:
-            merged_data_ctx_list = self.merge_cache_data_collection[data_tag].pop(data_watermark)
-            self.after_merge_queue.put((data_tag,merged_data_ctx_list))
+                    if data_tag not in can_pop_keys:
+                        can_pop_keys[data_tag] = []
+                    can_pop_keys[data_tag].append(data_watermark)
+
+        for data_tag, watermark_list in can_pop_keys.items():
+            min_watermark = min(watermark_list)
+            for watermark in watermark_list:
+                merged_data_ctx_list = self.merge_cache_data_collection[data_tag].pop(watermark)
+                self.after_merge_queue.put((data_tag,merged_data_ctx_list))
+            # 读取满足上游数量的水位线
+
+            for watermark in list(self.merge_cache_data_collection[data_tag].keys()):
+                if watermark < min_watermark:
+                    self.merge_cache_data_collection[data_tag].pop(watermark)
+            # 删除比可以合并数据更早的水位线
 
     def execute_plugin_task(self):
         data_tag, data_ctx_list =  self.after_merge_queue.get()
